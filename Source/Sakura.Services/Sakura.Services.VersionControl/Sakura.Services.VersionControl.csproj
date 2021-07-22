@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sakura.Service\Sakura.Service.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="P4API.NET" Version="2020.1.193.5313" />
+    <PackageReference Include="p4api.net.core" Version="2020.2.207.5590" />
+    <PackageReference Include="p4api.net.x64" Version="2020.2.207.5590" />
+    <PackageReference Include="p4api.net.x86" Version="2020.2.207.5590" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Git\" />
+  </ItemGroup>
+</Project>
