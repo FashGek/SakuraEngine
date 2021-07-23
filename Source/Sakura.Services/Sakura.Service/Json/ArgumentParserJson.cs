@@ -12,25 +12,25 @@ namespace Sakura.Service
         {
             JsonElement value;
             bool bGet = Element.TryGetProperty(Name, out value);
-            return bGet ? value : new JsonElement();
+            return bGet ? value : null;
         }
 
         public static async ValueTask<object> ParseJsonToParameters(MethodInfo Method, System.IO.Stream JsonStream)
         {
             // Gets the JSON and parses it
+            JsonElement? JParams = null;
             try
             {
-                var JsonParameters = await JsonSerializer.DeserializeAsync<JsonElement>(JsonStream);
-                var Parameters = Method.GetParameters()
-                    .Select(p => Convert.ChangeType(JsonParameters.TryGetProperty2(p.Name).ToString(), p.ParameterType))
-                    .ToArray();
-                return Parameters;
+                JParams = await JsonSerializer.DeserializeAsync<JsonElement?>(JsonStream);
             }
             catch (JsonException E)
             {
+                JParams = null;
                 Console.WriteLine(E);
-                return null;
             }
+            return Method.GetParameters()
+                ?.Select(p => Convert.ChangeType(JParams?.TryGetProperty2(p.Name)?.ToString()??p.DefaultValue, p.ParameterType)).ToArray()
+                ??null;
         }
     }
 }

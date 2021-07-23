@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sakura.Service", "Sakura.Se
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sakura.Services.VersionControl", "Sakura.Services.VersionControl\Sakura.Services.VersionControl.csproj", "{E1F51ABD-3B74-420D-A402-A8E742E35361}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sakura.Services.Dummy", "DummyService\Sakura.Services.Dummy.csproj", "{14E7CDD2-B2A4-4F38-A792-E494A8030FA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sakura.Services.Hub", "Sakura.Services.Hub\Sakura.Services.Hub.csproj", "{14E7CDD2-B2A4-4F38-A792-E494A8030FA5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sakura.Services.CLI", "Sakura.Services.CLI\Sakura.Services.CLI.csproj", "{31BD66E3-D2BD-4FEF-B8FA-5DB12DB744FE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{14E7CDD2-B2A4-4F38-A792-E494A8030FA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14E7CDD2-B2A4-4F38-A792-E494A8030FA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14E7CDD2-B2A4-4F38-A792-E494A8030FA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31BD66E3-D2BD-4FEF-B8FA-5DB12DB744FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31BD66E3-D2BD-4FEF-B8FA-5DB12DB744FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31BD66E3-D2BD-4FEF-B8FA-5DB12DB744FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31BD66E3-D2BD-4FEF-B8FA-5DB12DB744FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

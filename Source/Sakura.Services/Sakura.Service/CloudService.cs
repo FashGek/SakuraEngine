@@ -8,9 +8,9 @@
 
     public class CloudService
     {
-        public void Run<T>(string[] args) where T : new()
+        protected CloudService()
         {
-            CreateHostBuilder<T>(args).Build().Run();
+
         }
 
         public static T Invoke<T>(string Application, string Scope, object Parameters) 
@@ -25,6 +25,13 @@
             using var client = new DaprClientBuilder().Build();
             var RV = await client.InvokeMethodAsync<object, T>(Application, Scope, Parameters, cts.Token);
             return RV;
+        }
+
+        public static CloudService Run<T>(string[] args) where T : new ()
+        {
+            CloudService cs = new CloudService();
+            cs.CreateHostBuilder<T>(args).Build().Run();
+            return cs;
         }
 
         protected IHostBuilder CreateHostBuilder<T>(string[] args) where T : new() =>
