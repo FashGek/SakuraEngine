@@ -6,8 +6,11 @@ app = Flask(__name__)
 
 @app.route('/pick', methods=['POST'])
 def pick():
-    return filedialog.askopenfilename()
+    result = filedialog.askopenfilename()
+    root.update()
+    return result
     
 if __name__ == '__main__':
-    tk.Tk().withdraw()
+    root = tk.Tk()
+    root.withdraw()
     app.run(host=sys.argv[1], port=sys.argv[2], threaded=False)
