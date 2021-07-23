@@ -30,11 +30,23 @@
         }
 
         public static System.IO.StreamReader DaprListJsonStream(bool Kubernetes = false)
-            => ConsoleExecute("dapr", Kubernetes ? "list -k --output json" : "list --output json");
+            => ConsoleExecute("dapr", Kubernetes ? "list -k --log-as-json" : "list --log-as-json");
 
-        public static async ValueTask<DaprListResult[]> DaprList(bool Kubernetes = false) 
-            => await JsonSerializer.DeserializeAsync<DaprListResult[]>(
-                DaprListJsonStream(Kubernetes).BaseStream
-            );
+        public static async ValueTask<DaprListResult[]> DaprList(bool Kubernetes = false)
+        {
+            DaprListResult[] results = null;
+            try
+            {
+                results = await JsonSerializer.DeserializeAsync<DaprListResult[]>(
+                    DaprListJsonStream(Kubernetes).BaseStream
+                );
+            }
+            catch (System.Exception E)
+            {
+                results = null;
+            }
+            return results;
+        }
+             
     }
 }

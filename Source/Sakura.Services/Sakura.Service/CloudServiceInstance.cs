@@ -39,7 +39,7 @@ namespace Sakura.Service
                         args += $"-- dotnet {ExecName} --urls \"http://*:{AppPort}\" ";
                         break;
                     case CloudServiceLanguage.Python:
-                        args += $"-- python {ExecName}";
+                        args += $"-- python3 {ExecName} 0.0.0.0 {AppPort}";
                         break;
                     default:
                         throw new NotImplementedException("Only Support Python & C# Services Now!");

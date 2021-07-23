@@ -13,14 +13,14 @@ namespace Sakura.Services.Hub
             {
                 string st = DaprCLI.DaprListJsonStream().ReadToEnd();
                 var DaprList = DaprCLI.DaprList().Result;
-                var SakuraCLIExisted = from Dapr in DaprList
+                var SakuraCLIExisted = DaprList is null ? null : from Dapr in DaprList
                                        where Dapr.appId == "SakuraCLI"
                                        select Dapr;        
-                var FileDialogExisted = from Dapr in DaprList
+                var FileDialogExisted = DaprList is null ? null : from Dapr in DaprList
                                        where Dapr.appId == "SakuraFileDialog"
                                         select Dapr;
 
-                if (!SakuraCLIExisted.Any())
+                if (SakuraCLIExisted is null || !SakuraCLIExisted.Any())
                 {
                     // Acquire CLI Service 
                     CLIService = new CloudServiceInstance(
@@ -35,7 +35,7 @@ namespace Sakura.Services.Hub
                     Console.WriteLine("CLIService Finded");
                 }
 
-                if (!SakuraCLIExisted.Any())
+                if (SakuraCLIExisted is null || !SakuraCLIExisted.Any())
                 {
                     // Acquire FileDialog Service 
                     FileDialogService = new CloudServiceInstance("Sakura.Services.FileDialog.py",
