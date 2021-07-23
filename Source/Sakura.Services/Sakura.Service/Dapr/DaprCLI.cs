@@ -30,7 +30,7 @@
         }
 
         public static System.IO.StreamReader DaprListJsonStream(bool Kubernetes = false)
-            => ConsoleExecute("dapr", Kubernetes ? "list -k --log-as-json" : "list --log-as-json");
+            => ConsoleExecute("dapr", Kubernetes ? "list -k -o json" : "list -o json");
 
         public static async ValueTask<DaprListResult[]> DaprList(bool Kubernetes = false)
         {
