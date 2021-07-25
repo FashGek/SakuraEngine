@@ -1,12 +1,20 @@
 from flask import Flask
-import tkinter as tk
 from tkinter import filedialog
+from platform import system as platform
+from os import system
 import sys
+import tkinter as tk
 app = Flask(__name__)
+
+@app.route('/version', methods=['POST'])
+def version():
+    return "0.1.0"
 
 @app.route('/pick', methods=['POST'])
 def pick():
-    result = filedialog.askopenfilename()
+    if platform() == 'Darwin': 
+        system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "Python" to true' ''')
+    result = filedialog.askopenfilename(parent=root)
     root.update()
     return result
     
