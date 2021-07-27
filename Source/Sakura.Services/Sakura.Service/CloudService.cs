@@ -22,7 +22,12 @@
         public static async ValueTask<T> InvokeAsync<T>(string Application, string Scope, object Parameters)
         {
             var cts = new CancellationTokenSource();
-            using var client = new DaprClientBuilder().Build();
+            using var client = new DaprClientBuilder().UseJsonSerializationOptions(
+                new System.Text.Json.JsonSerializerOptions
+                {
+                    DictionaryKeyPolicy = null
+                }
+                ).Build();
             var RV = await client.InvokeMethodAsync<object, T>(Application, Scope, Parameters, cts.Token);
             return RV;
         }

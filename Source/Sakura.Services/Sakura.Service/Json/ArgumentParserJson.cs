@@ -8,6 +8,22 @@ namespace Sakura.Service
 {
     internal static partial class AsyncArgumentsParser
     {
+        public static object ToObject(this JsonElement element, Type type)
+        {
+            var json = element.GetRawText();
+            return JsonSerializer.Deserialize(json, type);
+        }
+        public static T ToObject<T>(this JsonElement element)
+        {
+            var json = element.GetRawText();
+            return JsonSerializer.Deserialize<T>(json);
+        }
+        public static T ToObject<T>(this JsonDocument document)
+        {
+            var json = document.RootElement.GetRawText();
+            return JsonSerializer.Deserialize<T>(json);
+        }
+
         public static JsonElement? TryGetProperty2(this JsonElement Element, string Name)
         {
             JsonElement value;
@@ -28,8 +44,9 @@ namespace Sakura.Service
                 JParams = null;
                 Console.WriteLine(E);
             }
+            Console.WriteLine(JParams.ToString());
             return Method.GetParameters()
-                ?.Select(p => Convert.ChangeType(JParams?.TryGetProperty2(p.Name)?.ToString()??p.DefaultValue, p.ParameterType)).ToArray()
+                ?.Select(p => JParams?.TryGetProperty2(p.Name)?.ToObject(p.ParameterType)??p.DefaultValue).ToArray()
                 ??null;
         }
     }

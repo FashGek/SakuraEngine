@@ -1,9 +1,9 @@
 from flask import Flask
 from tkinter import filedialog
+import tkinter as tk
 from platform import system as platform
 from os import system
 import sys
-import tkinter as tk
 app = Flask(__name__)
 
 @app.route('/version', methods=['POST'])

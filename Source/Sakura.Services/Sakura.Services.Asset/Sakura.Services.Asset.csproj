@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Sakura.Services.CLI' " />
+  <ItemGroup>
+    <ProjectReference Include="..\Sakura.Service\Sakura.Service.csproj" />
+    <ProjectReference Include="..\Sakura.AssetPipeline\Sakura.AssetPipeline.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+  </ItemGroup>
+
+</Project>

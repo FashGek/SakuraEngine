@@ -14,7 +14,14 @@ def build_as_csproj(root, file):
         ])
     return
 
+def run_as_build_script(root, file):
+    source_file = os.path.join(root, file)
+    os.system("python3 " + source_file)
+
 def build_as_python(root, file):
+    if(file.endswith(".build.py")):
+        run_as_build_script(root, file)
+        return
     if(file.endswith(".py")):
         source_file = os.path.join(root, file)
         destination_file = os.path.join(csoutdir, file)

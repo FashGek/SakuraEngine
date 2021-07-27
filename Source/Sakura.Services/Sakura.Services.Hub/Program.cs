@@ -18,7 +18,10 @@ namespace Sakura.Services.Hub
                                        select Dapr;        
                 var FileDialogExisted = DaprList is null ? null : from Dapr in DaprList
                                        where Dapr.appId == "SakuraFileDialog"
-                                        select Dapr;
+                                       select Dapr;
+                var AssetServiceExisted = DaprList is null ? null : from Dapr in DaprList
+                                       where Dapr.appId == "SakuraAsset"
+                                       select Dapr;
 
                 if (SakuraCLIExisted is null || !SakuraCLIExisted.Any())
                 {
@@ -49,14 +52,26 @@ namespace Sakura.Services.Hub
                     Console.WriteLine("FileDialogService Finded");
                 }
 
-                DaprCLI.ConsoleExecute("dapr", "list");
+                if (AssetServiceExisted is null || !AssetServiceExisted.Any())
+                {
+                    // Acquire FileDialog Service 
+                    AssetService = new CloudServiceInstance("Sakura.Services.Asset.dll",
+                        "SakuraAsset", 5020, 5025,
+                        CloudServiceInstance.CloudServiceLanguage.ASPDotNet);
+                    Console.WriteLine("AssetService Started");
+                }
+                else
+                {
+                    AssetService = new CloudServiceInstance(AssetServiceExisted.ElementAt(0).pid);
+                    Console.WriteLine("AssetService Finded");
+                }
             }
             catch (Exception E)
             {
                 Console.WriteLine(E);
             }
 
-            while (CLIService != null || FileDialogService != null)
+            while (CLIService != null || FileDialogService != null || AssetService != null)
             {
 
             }
@@ -65,5 +80,6 @@ namespace Sakura.Services.Hub
 
         static CloudServiceInstance CLIService;
         static CloudServiceInstance FileDialogService;
+        static CloudServiceInstance AssetService;
     }
 }
