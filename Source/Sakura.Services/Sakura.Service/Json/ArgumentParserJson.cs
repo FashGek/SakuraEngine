@@ -13,6 +13,11 @@ namespace Sakura.Service
             var json = element.GetRawText();
             return JsonSerializer.Deserialize(json, type);
         }
+        public static object ToObject(this JsonDocument document, Type type)
+        {
+            var json = document.RootElement.GetRawText();
+            return JsonSerializer.Deserialize(json, type);
+        }
         public static T ToObject<T>(this JsonElement element)
         {
             var json = element.GetRawText();
@@ -23,7 +28,6 @@ namespace Sakura.Service
             var json = document.RootElement.GetRawText();
             return JsonSerializer.Deserialize<T>(json);
         }
-
         public static JsonElement? TryGetProperty2(this JsonElement Element, string Name)
         {
             JsonElement value;
