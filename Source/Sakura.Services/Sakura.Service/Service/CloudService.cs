@@ -26,7 +26,8 @@
             using var client = new DaprClientBuilder().UseJsonSerializationOptions(
                 new System.Text.Json.JsonSerializerOptions
                 {
-                    DictionaryKeyPolicy = null
+                    DictionaryKeyPolicy = ServiceJsonNamingPolicy.Policy,
+                    PropertyNameCaseInsensitive = false
                 }
                 ).Build();
             var RV = await client.InvokeMethodAsync<object, T>(Application, Scope, Parameters, cts.Token);
@@ -58,10 +59,10 @@
 
         protected IHostBuilder CreateHostBuilder<T>(string[] args) where T : new() =>
             Host.CreateDefaultBuilder(args)
-            .UseConsoleLifetime(opts => opts.SuppressStatusMessages = true)
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<ServiceStartup<T>>();
-            });
+                .UseConsoleLifetime(opts => opts.SuppressStatusMessages = true)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<ServiceStartup<T>>();
+                });
     }
 }

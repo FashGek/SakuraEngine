@@ -3,14 +3,13 @@ using System;
 namespace Sakura.Service
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public class ServiceTopicAttribute : Attribute
+    public class ServiceTopicAttribute : ServiceAPIAttribute
     {
-        public ServiceTopicAttribute(string pubsubName, string name)
+        public ServiceTopicAttribute(string PubsubName, string Name)
+            :base(Name)
         {
-            this.Name = name;
-            this.PubsubName = pubsubName;
+            this.PubsubName = PubsubName;
         }
         public string PubsubName { get; }
-        public string Name { get; }
     }
 }

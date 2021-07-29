@@ -1,8 +1,9 @@
 namespace Sakura.Services.Asset
 {
     using Sakura.Service;
-    using Sakura.AssetPipeline;
     using System.Linq;
+    using Sakura.AssetPipeline;
+    using System.Threading.Tasks;
 
     public class Program
     {
@@ -38,8 +39,15 @@ namespace Sakura.Services.Asset
 
         [ServiceAPI("BuildAsset")]
         [return: ServiceResponse(ServiceDataFormat.JSON)]
-        public bool BuildAsset(IServiceContext Context, string Workspace, string PathInWorkspace)
-            => false;
+        public void BuildAsset(IServiceContext Context, string Workspace, string PathInWorkspace)
+            => Context.PublishEventAsync("pubsub", "BuildImpl", 
+                new { Workspace = Workspace }
+            ).Wait();
+        
+        [ServiceTopic("pubsub", "BuildImpl")]
+        [return: ServiceResponse(ServiceDataFormat.JSON)]
+        public void BuildAssetDummy(IServiceContext Context, string Workspace)
+            => System.Console.WriteLine("Build Impl!" + Workspace);
 
         public static void Main(string[] args) => CloudService.Run<Program>(args);
     }

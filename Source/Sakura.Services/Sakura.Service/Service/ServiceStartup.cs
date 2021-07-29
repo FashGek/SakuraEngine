@@ -55,9 +55,12 @@
                 if (APIAttr is not null)
                 {
                     NamedRequestDelegates.Add(APIAttr.Name, Method);
+                    var TopicAttr = APIAttr as ServiceTopicAttribute;
+                    if (TopicAttr is not null)
+                    {
+                        NamedTopicAttrs.Add(TopicAttr.Name, TopicAttr);
+                    }
                 }
-                // Topic Hooks
-                var TopicAttr = Method.GetCustomAttribute<ServiceTopicAttribute>();
 
                 // Lifetime Hooks
                 var LifeTimeAttr = Method.GetCustomAttribute<ServiceLifetimeAttribute>();
@@ -78,12 +81,18 @@
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDaprClient();
             services.AddSingleton(new JsonSerializerOptions()
             {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                PropertyNameCaseInsensitive = true,
+                PropertyNamingPolicy = ServiceJsonNamingPolicy.Policy,
+                PropertyNameCaseInsensitive = false
             });
+            services.AddDaprClient(builder => builder.UseJsonSerializationOptions(
+                new JsonSerializerOptions()
+                {
+                    PropertyNamingPolicy = ServiceJsonNamingPolicy.Policy,
+                    PropertyNameCaseInsensitive = false
+                }
+            ));
         }
 
         public void Configure(IApplicationBuilder app, 
@@ -110,13 +119,18 @@
 
                 foreach (var kv in NamedRequestDelegates)
                 {
+                    var Name = kv.Key;
                     var Method = kv.Value;
-                    var Mapped = endpoints.MapPost(kv.Key, Binder);
-                    //var Pubsubed = Mapped.WithTopic(pubsubName, topicName);
+                    var Mapped = endpoints.MapPost(Name, Binder);
+                    if (NamedTopicAttrs.TryGetValue(Name, out var TopicAttr))
+                    {
+                        var Pubsubed = Mapped.WithTopic(TopicAttr.PubsubName, Name);
+                    }
 
                     async Task Binder(HttpContext context)
                     {
-                        var Client = context.RequestServices.GetRequiredService<DaprClient>();
+                        var Client = context.RequestServices
+                            .GetRequiredService<DaprClient>();
                         var Arguments = await AsyncArgumentsParser.ParseStreamToParameters(Method,
                             context.Request.Body, RequestParamTypes.GetValueOrDefault(kv.Key)
                         ) as object[];
@@ -131,10 +145,11 @@
                             Arguments = ArgumentAt0;
                         }
                         var Result = Method.Invoke(ServiceImpl, Arguments); // Invoke
-                        if (Result != null)
+                        if (Result is not Task || Result != null)
                         {
                             Console.WriteLine("Result is {0}.", Result);
                         }
+                        
                         await JsonSerializer.SerializeAsync(context.Response.Body, Result);
                     }
                 }
@@ -146,6 +161,7 @@
         static MethodInfo StoppedDelegate = null;
         static MethodInfo StartupDelegate = null;
         static Dictionary<string, MethodInfo> NamedRequestDelegates = new Dictionary<string, MethodInfo>();
+        static Dictionary<string, ServiceTopicAttribute> NamedTopicAttrs = new Dictionary<string, ServiceTopicAttribute>();
         static Dictionary<string, ServiceDataFormat> RequestRVTypes = new Dictionary<string, ServiceDataFormat>();
         static Dictionary<string, ServiceDataFormat> RequestParamTypes = new Dictionary<string, ServiceDataFormat>();
     }

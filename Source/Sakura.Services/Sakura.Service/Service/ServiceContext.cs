@@ -1,14 +1,19 @@
 ﻿namespace Sakura.Service
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Dapr.Client;
     using Microsoft.AspNetCore.Http;
 
     public interface IServiceContext
     {
-        public Task<T> GetStateAsync<T>(string StoreName, string Key);
-        public Task SaveStateAsync<T>(string StoreName, string Key, T Value);
+        public Task<T> GetStateAsync<T>(string storeName, string key);
+        public Task SaveStateAsync<T>(string storeName, string key, T value);
+        public Task PublishEventAsync<T>(string pubsubName, string eventName,
+            T eventData, CancellationToken cancellationToken = default(CancellationToken));
+        public Task PublishEventAsync(string pubsubName, string eventName,
+            CancellationToken cancellationToken = default(CancellationToken));
     }
 
     public class ServiceContext : IServiceContext
@@ -18,15 +23,24 @@
             this.daprClient = client;
             this.httpContext = context;
         }
-
-        public async Task<T> GetStateAsync<T>(string StoreName, string Key)
+        public async Task PublishEventAsync(string pubsubName, string eventName,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await daprClient.GetStateAsync<T>(StoreName, Key);
+            await daprClient.PublishEventAsync(pubsubName, eventName, cancellationToken);
         }
-
-        public async Task SaveStateAsync<T>(string StoreName, string Key, T Value)
+        public async Task PublishEventAsync<T>(string pubsubName, string eventName,
+            T eventData, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await daprClient.SaveStateAsync(StoreName, Key, Value);
+            await daprClient.PublishEventAsync<T>(pubsubName, eventName,
+                eventData, cancellationToken);
+        }
+        public async Task<T> GetStateAsync<T>(string storeName, string key)
+        {
+            return await daprClient.GetStateAsync<T>(storeName, key);
+        }
+        public async Task SaveStateAsync<T>(string storeName, string key, T value)
+        {
+            await daprClient.SaveStateAsync(storeName, key, value);
         }
         protected DaprClient daprClient { get; }
         public HttpContext httpContext { get; }
