@@ -12,6 +12,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
 
     internal class ServiceStartup<T> where T : new()
     {
@@ -49,10 +50,28 @@
             if (Methods is null) return;
             foreach (var Method in Methods)
             {
+                // API Hooks
                 var APIAttr = Method.GetCustomAttribute<ServiceAPIAttribute>();
                 if (APIAttr is not null)
                 {
                     NamedRequestDelegates.Add(APIAttr.Name, Method);
+                }
+                // Topic Hooks
+                var TopicAttr = Method.GetCustomAttribute<ServiceTopicAttribute>();
+
+                // Lifetime Hooks
+                var LifeTimeAttr = Method.GetCustomAttribute<ServiceLifetimeAttribute>();
+                if (LifeTimeAttr is not null)
+                {
+                    switch(LifeTimeAttr.Section)
+                    {
+                        //case ServiceLifetimeSection.Stopping:
+                        //    StoppingDelegate = Method; break;
+                        //case ServiceLifetimeSection.Stopped:
+                        //    StoppedDelegate = Method; break;
+                        case ServiceLifetimeSection.Startup:
+                            StartupDelegate = Method; break;
+                    }
                 }
             }
         }
@@ -67,7 +86,10 @@
             });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, 
+            IWebHostEnvironment env,
+            ILoggerFactory loggerFactory, 
+            Microsoft.Extensions.Hosting.IHostApplicationLifetime appLifetime)
         {
             if (env.IsDevelopment())
             {
@@ -75,23 +97,39 @@
             }
             app.UseRouting();
             app.UseCloudEvents();
-
+            //if (StartupDelegate is not null)
+            //    appLifetime.ApplicationStarted.Register(() => StartupDelegate.Invoke(ServiceImpl, null));
+            //if (StoppingDelegate is not null)
+            //    appLifetime.ApplicationStopping.Register(() => StoppingDelegate.Invoke(ServiceImpl, null));
+            //if (StoppedDelegate is not null)
+            //    appLifetime.ApplicationStopped.Register(() => StoppedDelegate.Invoke(ServiceImpl, null));
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapSubscribeHandler();
 
                 foreach (var kv in NamedRequestDelegates)
                 {
-                    endpoints.MapPost(kv.Key, Binder);
+                    var Method = kv.Value;
+                    var Mapped = endpoints.MapPost(kv.Key, Binder);
+                    //var Pubsubed = Mapped.WithTopic(pubsubName, topicName);
 
                     async Task Binder(HttpContext context)
                     {
                         var Client = context.RequestServices.GetRequiredService<DaprClient>();
-                        var Method = kv.Value;
                         var Arguments = await AsyncArgumentsParser.ParseStreamToParameters(Method,
                             context.Request.Body, RequestParamTypes.GetValueOrDefault(kv.Key)
                         ) as object[];
-                        
+                        var ServiceContext = new ServiceContext(Client, context);
+                        object[] ArgumentAt0 = new object[] { ServiceContext };
+                        if(Arguments is not null)
+                        {
+                            Arguments[0] = ServiceContext;
+                        }
+                        else
+                        {
+                            Arguments = ArgumentAt0;
+                        }
                         var Result = Method.Invoke(ServiceImpl, Arguments); // Invoke
                         if (Result != null)
                         {
@@ -104,6 +142,9 @@
         }
 
         protected T ServiceImpl;
+        static MethodInfo StoppingDelegate = null;
+        static MethodInfo StoppedDelegate = null;
+        static MethodInfo StartupDelegate = null;
         static Dictionary<string, MethodInfo> NamedRequestDelegates = new Dictionary<string, MethodInfo>();
         static Dictionary<string, ServiceDataFormat> RequestRVTypes = new Dictionary<string, ServiceDataFormat>();
         static Dictionary<string, ServiceDataFormat> RequestParamTypes = new Dictionary<string, ServiceDataFormat>();

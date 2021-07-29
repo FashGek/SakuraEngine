@@ -1,6 +1,7 @@
 ﻿namespace Sakura.Service
 {
     using Dapr.Client;
+    using System.Linq;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Hosting;
     using System.Threading;
@@ -8,7 +9,7 @@
 
     public class CloudService
     {
-        protected CloudService()
+        protected CloudService() 
         {
 
         }
@@ -39,8 +40,25 @@
             return cs;
         }
 
+        public static DaprListResult WaitUntilServiceStarted(string Application)
+        {
+            DaprListResult AssetServiceInstance = null;
+            while (AssetServiceInstance is null)
+            {
+                var DaprList2 = DaprCLI.DaprList().Result;
+                var AssetServiceExisted2 = DaprList2 is null ? null :
+                                        from Dapr in DaprList2
+                                        where Dapr.appId == Application
+                                        select Dapr;
+                if (AssetServiceExisted2 is not null)
+                AssetServiceInstance = AssetServiceExisted2.Any()? AssetServiceExisted2?.ElementAt(0) : null;
+            }
+            return AssetServiceInstance;
+        }
+
         protected IHostBuilder CreateHostBuilder<T>(string[] args) where T : new() =>
             Host.CreateDefaultBuilder(args)
+            .UseConsoleLifetime(opts => opts.SuppressStatusMessages = true)
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseStartup<ServiceStartup<T>>();

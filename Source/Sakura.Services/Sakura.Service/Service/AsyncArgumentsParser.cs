@@ -19,7 +19,7 @@ namespace Sakura.Service
                 Console.WriteLine("{0} Params Passed.", Params.Length);
             }
             var Arguments = Params is null ? null :
-                Params.Length <= 0 ? null
+                Params.Length <= 1 ? null
                 : await ParseJsonToParameters(Method, Stream) as object[];
             if (Arguments != null)
             {

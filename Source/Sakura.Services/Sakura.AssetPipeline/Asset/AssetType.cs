@@ -31,14 +31,32 @@
                 Value.ValidExtensionNames.Add(Extension);
                 return true;
             }
-            System.Console.WriteLine(Name);
+            return false;
+        }
+
+        public static bool DettachExtension(string Name, string Extension)
+        {
+            if (AllTypes.TryGetValue(Name, out var Value))
+            {
+                System.Console.WriteLine("-" + Name);
+                Value.ValidExtensionNames.Remove(Extension);
+                return true;
+            }
             return false;
         }
 
         public static bool RegisterAssetType(string Name, IEnumerable<string> Exts)
         {
-            AssetType NewType = new AssetType(Name, Exts);
-            return AllTypes.TryAdd(Name, NewType);
+            if (AllTypes.TryGetValue(Name, out var Value))
+            {
+                Value.ValidExtensionNames.AddRange(Exts);
+                return true;
+            }
+            else
+            {
+                AssetType NewType = new AssetType(Name, Exts);
+                return AllTypes.TryAdd(Name, NewType);
+            }
         }
 
         public string TypeName { get; }

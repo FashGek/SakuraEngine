@@ -6,7 +6,7 @@
     {
         [ServiceAPI("Perforce/Loggin")]
         [return: ServiceResponse(ServiceDataFormat.JSON)]
-        public bool LogginPerforce(string Server, string User, string Workspace = "")
+        public bool LogginPerforce(IServiceContext Context, string Server, string User, string Workspace = "")
         {
             Connection = new PerfoceConnection(Server, User, Workspace);
             return Connection.UserConnected;
@@ -14,7 +14,7 @@
 
         [ServiceAPI("Perforce/State")]
         [return: ServiceResponse(ServiceDataFormat.JSON)]
-        public PerforceState QueryPerforce()
+        public PerforceState QueryPerforce(IServiceContext Context)
         {
             PerforceState State = new PerforceState();
             State.ServerConnected = Connection.ServerConnected;
