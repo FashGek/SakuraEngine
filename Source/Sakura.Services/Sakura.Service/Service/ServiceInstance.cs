@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Sakura.Service
 {
-    public class DaprListResult
+    public class ServiceInstance
     {
         public string appId { get; set; }
         public int httpPort { get; set; }

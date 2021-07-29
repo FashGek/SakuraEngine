@@ -14,10 +14,10 @@
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
 
-    internal class ServiceStartup<T> where T : new()
+    internal class DaprServiceStartup<T> where T : new()
     {
         public IConfiguration Configuration { get; }
-        static ServiceStartup()
+        static DaprServiceStartup()
         {
             var Methods = typeof(T).GetMethods();
             if (Methods is null) return;
@@ -41,7 +41,7 @@
             }
         }
 
-        public ServiceStartup(IConfiguration configuration)
+        public DaprServiceStartup(IConfiguration configuration)
         {
             this.Configuration = configuration;
             ServiceImpl = new T();

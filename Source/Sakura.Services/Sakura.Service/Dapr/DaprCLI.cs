@@ -32,12 +32,12 @@
         public static System.IO.StreamReader DaprListJsonStream(bool Kubernetes = false)
             => ConsoleExecute("dapr", Kubernetes ? "list -k -o json" : "list -o json");
 
-        public static async ValueTask<DaprListResult[]> DaprList(bool Kubernetes = false)
+        public static async ValueTask<ServiceInstance[]> DaprList(bool Kubernetes = false)
         {
-            DaprListResult[] results = null;
+            ServiceInstance[] results = null;
             try
             {
-                results = await JsonSerializer.DeserializeAsync<DaprListResult[]>(
+                results = await JsonSerializer.DeserializeAsync<ServiceInstance[]>(
                     DaprListJsonStream(Kubernetes).BaseStream
                 );
             }

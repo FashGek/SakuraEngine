@@ -9,11 +9,7 @@
 
     public class CloudService
     {
-        protected CloudService() 
-        {
-
-        }
-
+        protected CloudService() {}
         public static T Invoke<T>(string Application, string Scope, object Parameters) 
         {
             var task = InvokeAsync<T>(Application, Scope, Parameters);
@@ -41,9 +37,9 @@
             return cs;
         }
 
-        public static DaprListResult WaitUntilServiceStarted(string Application)
+        public static ServiceInstance WaitUntilServiceStarted(string Application)
         {
-            DaprListResult AssetServiceInstance = null;
+            ServiceInstance AssetServiceInstance = null;
             while (AssetServiceInstance is null)
             {
                 var DaprList2 = DaprCLI.DaprList().Result;
@@ -62,7 +58,7 @@
                 .UseConsoleLifetime(opts => opts.SuppressStatusMessages = true)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<ServiceStartup<T>>();
+                    webBuilder.UseStartup<DaprServiceStartup<T>>();
                 });
     }
 }
