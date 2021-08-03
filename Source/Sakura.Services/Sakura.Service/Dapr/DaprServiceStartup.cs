@@ -3,7 +3,9 @@
     using System;
     using System.Collections.Generic;
     using System.Reflection;
+    using System.Text;
     using System.Text.Json;
+    using System.Text.Unicode;
     using System.Threading.Tasks;
     using Dapr.Client;
     using Microsoft.AspNetCore.Builder;
@@ -129,28 +131,42 @@
 
                     async Task Binder(HttpContext context)
                     {
-                        var Client = context.RequestServices
-                            .GetRequiredService<DaprClient>();
-                        var Arguments = await AsyncArgumentsParser.ParseStreamToParameters(Method,
-                            context.Request.Body, RequestParamTypes.GetValueOrDefault(kv.Key)
-                        ) as object[];
-                        var ServiceContext = new ServiceContext(Client, context);
-                        object[] ArgumentAt0 = new object[] { ServiceContext };
-                        if(Arguments is not null)
+                        var Client = context.RequestServices.GetRequiredService<DaprClient>();
+                        object[] Arguments = null;
+                        // 
                         {
-                            Arguments[0] = ServiceContext;
+                            Arguments = await AsyncArgumentsParser.ParseStreamToParameters(Method,
+                                context.Request.Body, RequestParamTypes.GetValueOrDefault(kv.Key)
+                            ) as object[];
+                            var ServiceContext = new ServiceContext(Client, context);
+                            object[] ArgumentAt0 = new object[] { ServiceContext };
+                            if (Arguments is not null)
+                            {
+                                Arguments[0] = ServiceContext;
+                            }
+                            else
+                            {
+                                Arguments = ArgumentAt0;
+                            }
                         }
-                        else
+
+                        try
                         {
-                            Arguments = ArgumentAt0;
+                            // Invoke
+                            var Result = Method.Invoke(ServiceImpl, Arguments); // Invoke
+                            if (Result is not Task || Result != null)
+                            {
+                                Console.WriteLine("Result is {0}.", Result);
+                            }
+                            await JsonSerializer.SerializeAsync(context.Response.Body, Result);
                         }
-                        var Result = Method.Invoke(ServiceImpl, Arguments); // Invoke
-                        if (Result is not Task || Result != null)
+                        catch (ArgumentException E)
                         {
-                            Console.WriteLine("Result is {0}.", Result);
+                            context.Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest; // return 400
+                            var ServiceException = new InvalidArgumentsException(Arguments, Method.GetParameters());
+                            await JsonSerializer.SerializeAsync(context.Response.Body, ServiceException);
+                            Console.WriteLine($"Return Code {context.Response.StatusCode}, Error:\n {ServiceException}.");
                         }
-                        
-                        await JsonSerializer.SerializeAsync(context.Response.Body, Result);
                     }
                 }
             });

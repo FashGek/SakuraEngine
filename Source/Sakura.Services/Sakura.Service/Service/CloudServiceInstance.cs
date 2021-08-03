@@ -50,7 +50,7 @@ namespace Sakura.Service
                     {
                         FileName = "dapr",
                         Arguments = args,
-                        UseShellExecute = false,
+                        UseShellExecute = true,
                         CreateNoWindow = true,
                         RedirectStandardOutput = false,
                         RedirectStandardInput = false

@@ -13,7 +13,4 @@
   <ItemGroup>
     <None Remove="Service\" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Service\" />
-  </ItemGroup>
 </Project>

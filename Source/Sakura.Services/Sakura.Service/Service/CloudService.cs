@@ -26,8 +26,18 @@
                     PropertyNameCaseInsensitive = false
                 }
                 ).Build();
-            var RV = await client.InvokeMethodAsync<object, T>(Application, Scope, Parameters, cts.Token);
-            return RV;
+            try
+            {
+                return await client.InvokeMethodAsync<object, T>(Application, Scope, Parameters, cts.Token);
+            }
+            catch (InvocationException E)
+            {
+                string Content = await E.Response.Content.ReadAsStringAsync();
+                System.Console.WriteLine($"Invoke {E.AppId}::{E.MethodName} Error.\n" +
+                    $" Status Code: {E.Response.StatusCode}\n" +
+                    $" Content: {Content}");
+                return default(T);
+            }
         }
 
         public static CloudService Run<T>(string[] args) where T : new ()
