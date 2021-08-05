@@ -16,9 +16,9 @@
     {
         public static void Main(string[] args)
         {
-            VersionControlService = CloudService.Run<VersionControlService>(args);
+            VersionControlService = ServiceProgram.Run<VersionControlService>(args);
         }
 
-        static CloudService VersionControlService;
+        static ServiceProgram VersionControlService;
     }
 }

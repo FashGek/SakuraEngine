@@ -41,7 +41,7 @@
                     DaprListJsonStream(Kubernetes).BaseStream
                 );
             }
-            catch (System.Exception E)
+            catch (System.Exception)
             {
                 results = null;
             }

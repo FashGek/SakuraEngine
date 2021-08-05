@@ -37,6 +37,16 @@ namespace Sakura.Services.Asset
         public bool BindWorkspace(IServiceContext Context, string Workspace, string LocalPath)
             => false;
 
+        public class Ports
+        {
+            string DAPR_HTTP_PORT { get; }
+            string DAPR_GRPC_PORT { get; }
+        }
+        
+        [ServiceAPI("ErrorCall")]
+        [return: ServiceResponse(ServiceDataFormat.JSON)]
+        public Ports BindWorkspace2(IServiceContext Context) => ServiceProgram.Invoke<Ports>("nodeapp", "ports", null);
+
         [ServiceAPI("BuildAsset")]
         [return: ServiceResponse(ServiceDataFormat.JSON)]
         public void BuildAsset(IServiceContext Context, string Workspace, string PathInWorkspace)
@@ -49,6 +59,6 @@ namespace Sakura.Services.Asset
         public void BuildAssetDummy(IServiceContext Context, string Workspace)
             => System.Console.WriteLine("Build Impl!" + Workspace);
 
-        public static void Main(string[] args) => CloudService.Run<Program>(args);
+        public static void Main(string[] args) => ServiceProgram.Run<Program>(args);
     }
 }

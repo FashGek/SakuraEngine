@@ -68,6 +68,6 @@ namespace Sakura.Service
         //System.IO.StreamReader ConsoleReader;
         System.Diagnostics.Process Process;
         CloudServiceLanguage Language;
-        DeployAt Deployment = DeployAt.Local;
+        //DeployAt Deployment = DeployAt.Local;
     }
 }

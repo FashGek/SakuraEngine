@@ -5,8 +5,8 @@ namespace Sakura.Service
     [AttributeUsage(AttributeTargets.Method)]
     public class ServiceTopicAttribute : ServiceAPIAttribute
     {
-        public ServiceTopicAttribute(string PubsubName, string Name)
-            :base(Name)
+        public ServiceTopicAttribute(string PubsubName, string TopicName)
+            :base(TopicName)
         {
             this.PubsubName = PubsubName;
         }

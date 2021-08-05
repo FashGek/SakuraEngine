@@ -8,6 +8,11 @@
     <None Remove="Asset\" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Workspace\Trunk\" />
     <Folder Include="Asset\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="LightningDB" Version="0.13.0" />
+    <PackageReference Include="Spreads.LMDB" Version="2020.0.114" />
   </ItemGroup>
 </Project>

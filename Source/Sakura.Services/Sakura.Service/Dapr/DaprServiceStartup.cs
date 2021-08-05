@@ -16,7 +16,7 @@
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
 
-    internal class DaprServiceStartup<T> where T : new()
+    public class DaprServiceStartup<T> where T : new()
     {
         public IConfiguration Configuration { get; }
         static DaprServiceStartup()
@@ -32,7 +32,7 @@
                     RequestParamTypes.Add(APIAttr.Name, APIAttr.DataFormat);
 
                 var ParamAttr = Method.ReturnType.GetCustomAttribute<ServiceResponseAttribute>();
-                if (ParamAttr != null)
+                if (ParamAttr is not null)
                 {
                     RequestRVTypes.Add(APIAttr.Name, ParamAttr.DataFormat); 
                 }
@@ -108,8 +108,8 @@
             }
             app.UseRouting();
             app.UseCloudEvents();
-            //if (StartupDelegate is not null)
-            //    appLifetime.ApplicationStarted.Register(() => StartupDelegate.Invoke(ServiceImpl, null));
+            if (StartupDelegate is not null)
+                appLifetime.ApplicationStarted.Register(() => StartupDelegate.Invoke(ServiceImpl, null));
             //if (StoppingDelegate is not null)
             //    appLifetime.ApplicationStopping.Register(() => StoppingDelegate.Invoke(ServiceImpl, null));
             //if (StoppedDelegate is not null)
@@ -133,23 +133,31 @@
                     {
                         var Client = context.RequestServices.GetRequiredService<DaprClient>();
                         object[] Arguments = null;
-                        // 
+                        // Parse Parameters
+                        try
                         {
                             Arguments = await AsyncArgumentsParser.ParseStreamToParameters(Method,
                                 context.Request.Body, RequestParamTypes.GetValueOrDefault(kv.Key)
                             ) as object[];
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                        finally
+                        {
                             var ServiceContext = new ServiceContext(Client, context);
-                            object[] ArgumentAt0 = new object[] { ServiceContext };
                             if (Arguments is not null)
                             {
                                 Arguments[0] = ServiceContext;
                             }
                             else
                             {
-                                Arguments = ArgumentAt0;
+                                Arguments = new object[] { ServiceContext };
                             }
                         }
 
+                        // Invoke
                         try
                         {
                             // Invoke
@@ -160,7 +168,7 @@
                             }
                             await JsonSerializer.SerializeAsync(context.Response.Body, Result);
                         }
-                        catch (ArgumentException E)
+                        catch (ArgumentException)
                         {
                             context.Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest; // return 400
                             var ServiceException = new InvalidArgumentsException(Arguments, Method.GetParameters());
@@ -173,8 +181,8 @@
         }
 
         protected T ServiceImpl;
-        static MethodInfo StoppingDelegate = null;
-        static MethodInfo StoppedDelegate = null;
+        //static MethodInfo StoppingDelegate = null;
+        //static MethodInfo StoppedDelegate = null;
         static MethodInfo StartupDelegate = null;
         static Dictionary<string, MethodInfo> NamedRequestDelegates = new Dictionary<string, MethodInfo>();
         static Dictionary<string, ServiceTopicAttribute> NamedTopicAttrs = new Dictionary<string, ServiceTopicAttribute>();

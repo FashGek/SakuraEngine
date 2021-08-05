@@ -7,9 +7,8 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    public class CloudService
+    public class ServiceProgram
     {
-        protected CloudService() {}
         public static T Invoke<T>(string Application, string Scope, object Parameters) 
         {
             var task = InvokeAsync<T>(Application, Scope, Parameters);
@@ -19,30 +18,31 @@
         public static async ValueTask<T> InvokeAsync<T>(string Application, string Scope, object Parameters)
         {
             var cts = new CancellationTokenSource();
-            using var client = new DaprClientBuilder().UseJsonSerializationOptions(
-                new System.Text.Json.JsonSerializerOptions
-                {
-                    DictionaryKeyPolicy = ServiceJsonNamingPolicy.Policy,
-                    PropertyNameCaseInsensitive = false
-                }
-                ).Build();
             try
             {
                 return await client.InvokeMethodAsync<object, T>(Application, Scope, Parameters, cts.Token);
             }
             catch (InvocationException E)
             {
-                string Content = await E.Response.Content.ReadAsStringAsync();
-                System.Console.WriteLine($"Invoke {E.AppId}::{E.MethodName} Error.\n" +
-                    $" Status Code: {E.Response.StatusCode}\n" +
-                    $" Content: {Content}");
-                return default(T);
+                if (E.Response is null)
+                {
+                    System.Console.WriteLine(E);
+                    return default(T);
+                }
+                else
+                {
+                    string Content = await E.Response.Content.ReadAsStringAsync();
+                    System.Console.WriteLine($"Invoke {E.AppId}::{E.MethodName} Error.\n" +
+                        $"Status Code: {E.Response.StatusCode}\n" +
+                        $"Content: {Content}");
+                    return default(T);
+                }
             }
         }
 
-        public static CloudService Run<T>(string[] args) where T : new ()
+        public static ServiceProgram Run<T>(string[] args) where T : new ()
         {
-            CloudService cs = new CloudService();
+            ServiceProgram cs = new ServiceProgram();
             cs.CreateHostBuilder<T>(args).Build().Run();
             return cs;
         }
@@ -63,6 +63,13 @@
             return AssetServiceInstance;
         }
 
+        protected ServiceProgram() { }
+        protected static DaprClient client = new DaprClientBuilder().UseJsonSerializationOptions(
+            new System.Text.Json.JsonSerializerOptions
+            {
+                DictionaryKeyPolicy = ServiceJsonNamingPolicy.Policy,
+                PropertyNameCaseInsensitive = false
+            }).Build();
         protected IHostBuilder CreateHostBuilder<T>(string[] args) where T : new() =>
             Host.CreateDefaultBuilder(args)
                 .UseConsoleLifetime(opts => opts.SuppressStatusMessages = true)
