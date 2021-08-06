@@ -9,6 +9,10 @@ namespace Sakura.Service
     [AttributeUsage(AttributeTargets.Class)]
     public class ServiceDeployAttribute : Attribute
     {
-
+        public ServiceDeployAttribute(DeployEnvironment Deployment)
+        {
+            this.Deployment = Deployment;
+        }
+        public DeployEnvironment Deployment { get; }
     }
 }

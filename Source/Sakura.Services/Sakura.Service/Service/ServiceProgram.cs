@@ -9,36 +9,20 @@
 
     public class ServiceProgram
     {
-        public static T Invoke<T>(string Application, string Scope, object Parameters) 
-        {
-            var task = InvokeAsync<T>(Application, Scope, Parameters);
-            return task.Result;
-        }
-
-        public static async ValueTask<T> InvokeAsync<T>(string Application, string Scope, object Parameters)
-        {
-            try
-            {
-                var cts = new CancellationTokenSource();
-                return await Client.InvokeMethodAsync<object, T>(Application, Scope, Parameters, cts.Token);
-            }
-            catch (InvocationException E)
-            {
-                if (E.Response is null)
-                {
-                    System.Console.WriteLine(E);
-                    return default(T);
-                }
-                else
-                {
-                    string Content = await E.Response.Content.ReadAsStringAsync();
-                    System.Console.WriteLine($"Invoke {E.AppId}::{E.MethodName} Error.\n" +
-                        $"Status Code: {E.Response.StatusCode}\n" +
-                        $"Content: {Content}");
-                    return default(T);
-                }
-            }
-        }
+        /// <summary>
+        ///     This method trys to invoke with a default service context. 
+        ///     For better tracking, use IServiceContext.Invoke if possible.
+        /// </summary>
+        /// <typeparam name="TRequest"></typeparam>
+        /// <typeparam name="TResponse"></typeparam>
+        /// <param name="Application"></param>
+        /// <param name="Scope"></param>
+        /// <param name="Parameters"></param>
+        /// <returns></returns>
+        public static TResponse Invoke<TRequest, TResponse>(string Application, string Scope, TRequest Parameters)
+            => InvokeAsync<TRequest, TResponse>(Application, Scope, Parameters).Result;
+        public static async ValueTask<TResponse> InvokeAsync<TRequest, TResponse>(string Application, string Scope, TRequest Parameters)
+            => await Client.InvokeAsync<TRequest, TResponse>(Application, Scope, Parameters, default(CancellationToken));
 
         public static ServiceProgram Run<T>(string[] args) where T : new ()
         {

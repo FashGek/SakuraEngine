@@ -23,7 +23,7 @@ namespace Sakura.AssetPipeline.Tests
         [Fact]
         public void TestInitialize_ShouldBe_Success()
         {
-            var res = ServiceProgram.Invoke<AssetType[]>("SakuraAsset", "ListTypes", null);
+            var res = ServiceProgram.Invoke<object, AssetType[]>("SakuraAsset", "ListTypes", null);
             Assert.True(res is not null);
         }
     }

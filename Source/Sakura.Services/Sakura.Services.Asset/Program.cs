@@ -45,7 +45,7 @@ namespace Sakura.Services.Asset
         
         [ServiceAPI("ErrorCall")]
         [return: ServiceResponse(ServiceDataFormat.JSON)]
-        public Ports BindWorkspace2(IServiceContext Context) => ServiceProgram.Invoke<Ports>("nodeapp", "ports", null);
+        public Ports BindWorkspace2(IServiceContext Context) => Context.Invoke<object, Ports>("nodeapp", "ports", null);
 
         [ServiceAPI("BuildAsset")]
         [return: ServiceResponse(ServiceDataFormat.JSON)]

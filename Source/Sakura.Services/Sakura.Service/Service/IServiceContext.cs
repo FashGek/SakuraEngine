@@ -11,9 +11,14 @@
             T eventData, CancellationToken cancellationToken = default(CancellationToken));
         public Task PublishEventAsync(string pubsubName, string eventName,
             CancellationToken cancellationToken = default(CancellationToken));
-        public Task InvokeMethodAsync<TRequest>(string appId, string methodName,
+
+        public Task InvokeAsync<TRequest>(string appId, string methodName,
             TRequest data, CancellationToken cancellationToken = default);
-        public Task<TResponse> InvokeMethodAsync<TRequest, TResponse>(string appId, string methodName, 
+        public Task<TResponse> InvokeAsync<TRequest, TResponse>(string appId, string methodName, 
             TRequest data, CancellationToken cancellationToken = default);
+        public TResponse Invoke<TRequest, TResponse>(string Application, string Scope, TRequest Parameters) 
+            => InvokeAsync<TRequest, TResponse>(Application, Scope, Parameters).Result;
+        public void Invoke<TRequest>(string Application, string Scope, TRequest Parameters)
+            => InvokeAsync<TRequest>(Application, Scope, Parameters).Wait();
     }
 }

@@ -29,8 +29,7 @@ namespace Sakura.Service
         public async Task PublishEventAsync<T>(string pubsubName, string eventName,
             T eventData, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await daprClient.PublishEventAsync<T>(pubsubName, eventName,
-                eventData, cancellationToken);
+            await daprClient.PublishEventAsync<T>(pubsubName, eventName, eventData, cancellationToken);
         }
         public async Task<T> GetStateAsync<T>(string storeName, string key)
         {
@@ -40,15 +39,50 @@ namespace Sakura.Service
         {
             await daprClient.SaveStateAsync(storeName, key, value);
         }
-        public async Task InvokeMethodAsync<TRequest>(string appId, string methodName,
+        public async Task InvokeAsync<TRequest>(string appId, string methodName,
             TRequest data, CancellationToken cancellationToken = default)
         {
-            await daprClient.InvokeMethodAsync<TRequest>(appId, methodName, data, cancellationToken);
+            try
+            {
+                await daprClient.InvokeMethodAsync<TRequest>(appId, methodName, data, cancellationToken);
+            }
+            catch (InvocationException E)
+            {
+                if (E.Response is null)
+                {
+                    System.Console.WriteLine(E);
+                }
+                else
+                {
+                    string Content = await E.Response.Content.ReadAsStringAsync();
+                    System.Console.WriteLine($"Invoke {E.AppId}::{E.MethodName} Error.\n" +
+                        $"Status Code: {E.Response.StatusCode}\n" +
+                        $"Content: {Content}");
+                }
+            }
         }
-        public async Task<TResponse> InvokeMethodAsync<TRequest, TResponse>(string appId, string methodName,
+        public async Task<TResponse> InvokeAsync<TRequest, TResponse>(string appId, string methodName,
             TRequest data, CancellationToken cancellationToken = default)
         {
-            return await daprClient.InvokeMethodAsync<TRequest, TResponse>(appId, methodName, data, cancellationToken);
+            try
+            {
+                return await daprClient.InvokeMethodAsync<TRequest, TResponse>(appId, methodName, data, cancellationToken);
+            }
+            catch (InvocationException E)
+            {
+                if (E.Response is null)
+                {
+                    System.Console.WriteLine(E);
+                }
+                else
+                {
+                    string Content = await E.Response.Content.ReadAsStringAsync();
+                    System.Console.WriteLine($"Invoke {E.AppId}::{E.MethodName} Error.\n" +
+                        $"Status Code: {E.Response.StatusCode}\n" +
+                        $"Content: {Content}");
+                }
+                return default(TResponse);
+            }
         }
 
         protected DaprClient daprClient { get; } = null;
