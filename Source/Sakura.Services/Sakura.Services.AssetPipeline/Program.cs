@@ -4,6 +4,7 @@ namespace Sakura.Services.Asset
     using System.Linq;
     using Sakura.AssetPipeline;
     using System.Threading.Tasks;
+    using System.Collections.Generic;
 
     public class Program
     {
@@ -37,16 +38,15 @@ namespace Sakura.Services.Asset
         public bool BindWorkspace(IServiceContext Context, string Workspace, string LocalPath)
             => false;
 
-        public class Ports
-        {
-            string DAPR_HTTP_PORT { get; }
-            string DAPR_GRPC_PORT { get; }
-        }
-        
-        [ServiceAPI("ErrorCall")]
+        [ServiceAPI("StartWatcher")]
         [return: ServiceResponse(ServiceDataFormat.JSON)]
-        public Ports BindWorkspace2(IServiceContext Context) => Context.Invoke<object, Ports>("nodeapp", "ports", null);
-
+        public bool StartWatcher(IServiceContext Context, string Workspace, string LocalPath, string DatabaseLocation) 
+            => WSWatchers.TryAdd(new LocalWorkspaceInstance() {
+                Workspace = Workspace,
+                LocalPath = LocalPath,
+                DatabaseLocation = DatabaseLocation
+            }, new WorkspaceWatcher(Workspace, LocalPath, DatabaseLocation));
+        
         [ServiceAPI("BuildAsset")]
         [return: ServiceResponse(ServiceDataFormat.JSON)]
         public void BuildAsset(IServiceContext Context, string Workspace, string PathInWorkspace)
@@ -60,5 +60,18 @@ namespace Sakura.Services.Asset
             => System.Console.WriteLine("Build Impl!" + Workspace);
 
         public static void Main(string[] args) => ServiceProgram.Run<Program>(args);
+
+        Dictionary<LocalWorkspaceInstance, WorkspaceWatcher> WSWatchers { get; } = new Dictionary<LocalWorkspaceInstance, WorkspaceWatcher>();
+
+
+        // !
+        public class Ports
+        {
+            string DAPR_HTTP_PORT { get; }
+            string DAPR_GRPC_PORT { get; }
+        }
+        [ServiceAPI("ErrorCall")]
+        [return: ServiceResponse(ServiceDataFormat.JSON)]
+        public Ports BindWorkspace2(IServiceContext Context) => Context.Invoke<object, Ports>("nodeapp", "ports", null);
     }
 }

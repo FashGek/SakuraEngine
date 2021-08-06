@@ -23,11 +23,11 @@ namespace Sakura.AssetPipeline.Tests
         [Fact]
         public void TestInitialize_ShouldBe_Success()
         {
-            var MetaString = localManifest.QueryMeta("PATH");
+            var MetaString = WSWatcher.Manifest.QueryMeta("PATH");
             Assert.True(MetaString is not null);
             Output.WriteLine(MetaString);
         }
 
-        LocalManifest localManifest = new LocalManifest("EngineAssets", "Library");
+        WorkspaceWatcher WSWatcher = new WorkspaceWatcher("EngineAssets", "EngineAssets", "Library");
     }
 }

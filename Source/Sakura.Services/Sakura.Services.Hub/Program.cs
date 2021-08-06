@@ -20,7 +20,7 @@ namespace Sakura.Services.Hub
                                        where Dapr.appId == "SakuraFileDialog"
                                        select Dapr;
                 var AssetServiceExisted = DaprList is null ? null : from Dapr in DaprList
-                                       where Dapr.appId == "SakuraAsset"
+                                       where Dapr.appId == "SakuraAssetPipeline"
                                        select Dapr;
 
                 if (SakuraCLIExisted is null || !SakuraCLIExisted.Any())
@@ -55,10 +55,10 @@ namespace Sakura.Services.Hub
                 if (AssetServiceExisted is null || !AssetServiceExisted.Any())
                 {
                     // Acquire FileDialog Service 
-                    AssetService = new ServiceApplication("Sakura.Services.Asset.dll",
-                        "SakuraAsset", 5020, 5025,
+                    AssetService = new ServiceApplication("Sakura.Services.AssetPipeline.dll",
+                        "SakuraAssetPipeline", 5020, 5025,
                         ProgramPlatform.ASPDotNet);
-                    Console.WriteLine("AssetService Started");
+                    Console.WriteLine("AssetPipelineService Started");
                 }
                 else
                 {

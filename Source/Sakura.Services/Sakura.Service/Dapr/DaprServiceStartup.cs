@@ -168,12 +168,15 @@
                             }
                             await JsonSerializer.SerializeAsync(context.Response.Body, Result);
                         }
-                        catch (ArgumentException)
+                        catch(Exception E)
                         {
-                            context.Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest; // return 400
-                            var ServiceException = new InvalidArgumentsException(Arguments, Method.GetParameters());
-                            await JsonSerializer.SerializeAsync(context.Response.Body, ServiceException);
-                            Console.WriteLine($"Return Code {context.Response.StatusCode}, Error:\n {ServiceException}.");
+                            if ((E is TargetInvocationException IE && IE.InnerException is ArgumentException InnerAE) || E is ArgumentException AE)
+                            {
+                                context.Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest; // return 400
+                                var ServiceException = new InvalidArgumentsException(Arguments, Method.GetParameters());
+                                await JsonSerializer.SerializeAsync(context.Response.Body, ServiceException);
+                                Console.WriteLine($"Return Code {context.Response.StatusCode}, Error:\n {ServiceException}.");
+                            }
                         }
                     }
                 }

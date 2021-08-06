@@ -6,9 +6,9 @@
 
     public class LocalManifest : IDisposable
     {
-        public LocalManifest(string WorkspaceName, string DatabaseLocation)
+        public LocalManifest(string LocalPath, string DatabaseLocation)
         {
-            this.WorkspaceName = WorkspaceName;
+            this.LocalPath = LocalPath;
             this.DatabaseLocation = DatabaseLocation;
 
             env = new LightningEnvironment("Library");
@@ -45,7 +45,7 @@
         }
 
         public readonly LightningEnvironment env;
-        public string WorkspaceName { get; }
+        public string LocalPath { get; }
         public string DatabaseLocation { get; }
     }
 }
