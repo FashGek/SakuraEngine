@@ -85,13 +85,13 @@
         {
             services.AddSingleton(new JsonSerializerOptions()
             {
-                PropertyNamingPolicy = ServiceJsonNamingPolicy.Policy,
+                PropertyNamingPolicy = JsonServiceNamingPolicy.Policy,
                 PropertyNameCaseInsensitive = false
             });
             services.AddDaprClient(builder => builder.UseJsonSerializationOptions(
                 new JsonSerializerOptions()
                 {
-                    PropertyNamingPolicy = ServiceJsonNamingPolicy.Policy,
+                    PropertyNamingPolicy = JsonServiceNamingPolicy.Policy,
                     PropertyNameCaseInsensitive = false
                 }
             ));

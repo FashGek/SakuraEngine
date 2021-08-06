@@ -17,7 +17,7 @@ namespace Sakura.Service
             .UseJsonSerializationOptions(
             new System.Text.Json.JsonSerializerOptions
             {
-                DictionaryKeyPolicy = ServiceJsonNamingPolicy.Policy,
+                DictionaryKeyPolicy = JsonServiceNamingPolicy.Policy,
                 PropertyNameCaseInsensitive = false
             }).Build();
         }
