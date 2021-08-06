@@ -23,8 +23,11 @@ namespace Sakura.AssetPipeline.Tests
         [Fact]
         public void TestInitialize_ShouldBe_Success()
         {
-            var res = ServiceProgram.Invoke<object, AssetType[]>("SakuraAsset", "ListTypes", null);
-            Assert.True(res is not null);
+            var MetaString = localManifest.QueryMeta("PATH");
+            Assert.True(MetaString is not null);
+            Output.WriteLine(MetaString);
         }
+
+        LocalManifest localManifest = new LocalManifest("EngineAssets", "Library");
     }
 }

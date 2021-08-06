@@ -31,9 +31,9 @@
             return State;
         }
 
-        [ServiceAPI("Perforce/GetFile")]
+        [ServiceAPI("Perforce/SyncDirectory")]
         [return: ServiceResponse(ServiceDataFormat.JSON)]
-        public void PerforceGetFile(IServiceContext Context, string Workspace, string FileName)
+        public void PerforceSyncDirectory(IServiceContext Context, string Workspace, string FileName)
         {
             if (Connection.UserConnected)
             {

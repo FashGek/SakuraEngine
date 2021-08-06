@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sakura.Services.CLI", "Saku
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sakura.AssetPipeline", "Sakura.AssetPipeline\Sakura.AssetPipeline.csproj", "{D62D8AC4-3839-449D-A42B-04D1CDC9E1A6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sakura.Services.Asset", "Sakura.Services.Asset\Sakura.Services.Asset.csproj", "{7D96D2AD-046D-485E-9FD3-00291897D582}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sakura.Services.AssetPipeline", "Sakura.Services.AssetPipeline\Sakura.Services.AssetPipeline.csproj", "{7D96D2AD-046D-485E-9FD3-00291897D582}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sakura.AssetPipeline.Tests", "Sakura.AssetPipeline.Tests\Sakura.AssetPipeline.Tests.csproj", "{B4075361-B3E0-441B-8DF3-B66630E6D4CA}"
 EndProject
