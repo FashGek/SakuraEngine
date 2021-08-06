@@ -17,10 +17,10 @@
 
         public static async ValueTask<T> InvokeAsync<T>(string Application, string Scope, object Parameters)
         {
-            var cts = new CancellationTokenSource();
             try
             {
-                return await client.InvokeMethodAsync<object, T>(Application, Scope, Parameters, cts.Token);
+                var cts = new CancellationTokenSource();
+                return await Client.InvokeMethodAsync<object, T>(Application, Scope, Parameters, cts.Token);
             }
             catch (InvocationException E)
             {
@@ -47,29 +47,9 @@
             return cs;
         }
 
-        public static ServiceInstance WaitUntilServiceStarted(string Application)
-        {
-            ServiceInstance AssetServiceInstance = null;
-            while (AssetServiceInstance is null)
-            {
-                var DaprList2 = DaprCLI.DaprList().Result;
-                var AssetServiceExisted2 = DaprList2 is null ? null :
-                                        from Dapr in DaprList2
-                                        where Dapr.appId == Application
-                                        select Dapr;
-                if (AssetServiceExisted2 is not null)
-                AssetServiceInstance = AssetServiceExisted2.Any()? AssetServiceExisted2?.ElementAt(0) : null;
-            }
-            return AssetServiceInstance;
-        }
-
         protected ServiceProgram() { }
-        protected static DaprClient client = new DaprClientBuilder().UseJsonSerializationOptions(
-            new System.Text.Json.JsonSerializerOptions
-            {
-                DictionaryKeyPolicy = ServiceJsonNamingPolicy.Policy,
-                PropertyNameCaseInsensitive = false
-            }).Build();
+
+        protected static IServiceContext Client = new DaprServiceContext();
         protected IHostBuilder CreateHostBuilder<T>(string[] args) where T : new() =>
             Host.CreateDefaultBuilder(args)
                 .UseConsoleLifetime(opts => opts.SuppressStatusMessages = true)

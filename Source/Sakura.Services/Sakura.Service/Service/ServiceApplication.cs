@@ -2,29 +2,14 @@
 
 namespace Sakura.Service
 {
-    public class CloudServiceInstance
+    public class ServiceApplication
     {
-        public enum CloudServiceLanguage
-        {
-            ASPDotNet,
-            Python,
-            PHP,
-            Java
-        }
-
-        public enum DeployAt
-        {
-            Local,
-            Kubernetes
-        }
-
-        public CloudServiceInstance(int Id)
+        public ServiceApplication(int Id)
         {
             Process = System.Diagnostics.Process.GetProcessById(Id);
-            //ConsoleReader = Process.StandardOutput;
         }
 
-        public CloudServiceInstance(string ExecName, string AppId, int AppPort, int HttpPort, CloudServiceLanguage Language)
+        public ServiceApplication(string ExecName, string AppId, int AppPort, int HttpPort, ProgramPlatform Language)
         {
             try
             {
@@ -35,10 +20,10 @@ namespace Sakura.Service
                 args += $"--dapr-http-port {HttpPort} ";
                 switch (Language)
                 {
-                    case CloudServiceLanguage.ASPDotNet:
+                    case ProgramPlatform.ASPDotNet:
                         args += $"-- dotnet {ExecName} --urls \"http://*:{AppPort}\" ";
                         break;
-                    case CloudServiceLanguage.Python:
+                    case ProgramPlatform.Python:
                         args += $"-- python3 {ExecName} 0.0.0.0 {AppPort}";
                         break;
                     default:
@@ -57,7 +42,6 @@ namespace Sakura.Service
                     }
                 };
                 Process.Start();
-                //ConsoleReader = Process.StandardOutput;
             }
             catch (Exception E)
             {
@@ -65,9 +49,7 @@ namespace Sakura.Service
             }
         }
 
-        //System.IO.StreamReader ConsoleReader;
         System.Diagnostics.Process Process;
-        CloudServiceLanguage Language;
-        //DeployAt Deployment = DeployAt.Local;
+        ProgramPlatform Language;
     }
 }

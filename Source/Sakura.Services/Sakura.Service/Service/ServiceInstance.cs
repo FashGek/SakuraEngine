@@ -18,4 +18,18 @@ namespace Sakura.Service
         public string created { get; set; }
         public int pid { get; set; }
     }
+
+    public enum ProgramPlatform
+    {
+        ASPDotNet,
+        Python,
+        PHP,
+        Java
+    }
+
+    public enum DeployEnvironment
+    {
+        Local,
+        Kubernetes
+    }
 }

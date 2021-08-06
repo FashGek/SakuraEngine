@@ -11,5 +11,9 @@
             T eventData, CancellationToken cancellationToken = default(CancellationToken));
         public Task PublishEventAsync(string pubsubName, string eventName,
             CancellationToken cancellationToken = default(CancellationToken));
+        public Task InvokeMethodAsync<TRequest>(string appId, string methodName,
+            TRequest data, CancellationToken cancellationToken = default);
+        public Task<TResponse> InvokeMethodAsync<TRequest, TResponse>(string appId, string methodName, 
+            TRequest data, CancellationToken cancellationToken = default);
     }
 }

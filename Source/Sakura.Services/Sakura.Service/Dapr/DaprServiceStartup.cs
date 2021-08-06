@@ -146,7 +146,7 @@
                         }
                         finally
                         {
-                            var ServiceContext = new ServiceContext(Client, context);
+                            var ServiceContext = new DaprServiceContext(Client, context);
                             if (Arguments is not null)
                             {
                                 Arguments[0] = ServiceContext;

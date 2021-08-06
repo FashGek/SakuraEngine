@@ -26,43 +26,43 @@ namespace Sakura.Services.Hub
                 if (SakuraCLIExisted is null || !SakuraCLIExisted.Any())
                 {
                     // Acquire CLI Service 
-                    CLIService = new CloudServiceInstance(
+                    CLIService = new ServiceApplication(
                         "Sakura.Services.CLI.dll",
                         "SakuraCLI", 5000, 5005,
-                        CloudServiceInstance.CloudServiceLanguage.ASPDotNet);
+                        ProgramPlatform.ASPDotNet);
                     Console.WriteLine("CLIService Started");
                 }
                 else
                 {
-                    CLIService = new CloudServiceInstance(SakuraCLIExisted.ElementAt(0).pid);
+                    CLIService = new ServiceApplication(SakuraCLIExisted.ElementAt(0).pid);
                     Console.WriteLine("CLIService Finded");
                 }
 
                 if (SakuraCLIExisted is null || !SakuraCLIExisted.Any())
                 {
                     // Acquire FileDialog Service 
-                    FileDialogService = new CloudServiceInstance("Sakura.Services.FileDialog.py",
+                    FileDialogService = new ServiceApplication("Sakura.Services.FileDialog.py",
                         "SakuraFileDialog", 5010, 5015,
-                        CloudServiceInstance.CloudServiceLanguage.Python);
+                        ProgramPlatform.Python);
                     Console.WriteLine("FileDialogService Started");
                 }
                 else
                 {
-                    FileDialogService = new CloudServiceInstance(FileDialogExisted.ElementAt(0).pid);
+                    FileDialogService = new ServiceApplication(FileDialogExisted.ElementAt(0).pid);
                     Console.WriteLine("FileDialogService Finded");
                 }
 
                 if (AssetServiceExisted is null || !AssetServiceExisted.Any())
                 {
                     // Acquire FileDialog Service 
-                    AssetService = new CloudServiceInstance("Sakura.Services.Asset.dll",
+                    AssetService = new ServiceApplication("Sakura.Services.Asset.dll",
                         "SakuraAsset", 5020, 5025,
-                        CloudServiceInstance.CloudServiceLanguage.ASPDotNet);
+                        ProgramPlatform.ASPDotNet);
                     Console.WriteLine("AssetService Started");
                 }
                 else
                 {
-                    AssetService = new CloudServiceInstance(AssetServiceExisted.ElementAt(0).pid);
+                    AssetService = new ServiceApplication(AssetServiceExisted.ElementAt(0).pid);
                     Console.WriteLine("AssetService Finded");
                 }
             }
@@ -78,8 +78,8 @@ namespace Sakura.Services.Hub
             return;
         }
 
-        static CloudServiceInstance CLIService;
-        static CloudServiceInstance FileDialogService;
-        static CloudServiceInstance AssetService;
+        static ServiceApplication CLIService;
+        static ServiceApplication FileDialogService;
+        static ServiceApplication AssetService;
     }
 }

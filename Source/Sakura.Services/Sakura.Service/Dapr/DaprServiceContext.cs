@@ -4,12 +4,22 @@ namespace Sakura.Service
     using System.Threading.Tasks;
     using Dapr.Client;
     using Microsoft.AspNetCore.Http;
-    public class ServiceContext : IServiceContext
+    public class DaprServiceContext : IServiceContext
     {
-        public ServiceContext(DaprClient client, HttpContext context)
+        public DaprServiceContext(DaprClient client, HttpContext context)
         {
             this.daprClient = client;
             this.httpContext = context;
+        }
+        public DaprServiceContext()
+        {
+            daprClient = new DaprClientBuilder()
+            .UseJsonSerializationOptions(
+            new System.Text.Json.JsonSerializerOptions
+            {
+                DictionaryKeyPolicy = ServiceJsonNamingPolicy.Policy,
+                PropertyNameCaseInsensitive = false
+            }).Build();
         }
         public async Task PublishEventAsync(string pubsubName, string eventName,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -30,7 +40,18 @@ namespace Sakura.Service
         {
             await daprClient.SaveStateAsync(storeName, key, value);
         }
-        protected DaprClient daprClient { get; }
-        public HttpContext httpContext { get; }
+        public async Task InvokeMethodAsync<TRequest>(string appId, string methodName,
+            TRequest data, CancellationToken cancellationToken = default)
+        {
+            await daprClient.InvokeMethodAsync<TRequest>(appId, methodName, data, cancellationToken);
+        }
+        public async Task<TResponse> InvokeMethodAsync<TRequest, TResponse>(string appId, string methodName,
+            TRequest data, CancellationToken cancellationToken = default)
+        {
+            return await daprClient.InvokeMethodAsync<TRequest, TResponse>(appId, methodName, data, cancellationToken);
+        }
+
+        protected DaprClient daprClient { get; } = null;
+        private HttpContext httpContext { get; } = null;
     }
 }
