@@ -170,12 +170,20 @@
                         }
                         catch(Exception E)
                         {
-                            if ((E is TargetInvocationException IE && IE.InnerException is ArgumentException InnerAE) || E is ArgumentException AE)
+                            ArgumentException ArgException = E is TargetInvocationException ? 
+                                E.InnerException as ArgumentException :
+                                E as ArgumentException;
+                            if (ArgException is not null)
                             {
                                 context.Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest; // return 400
-                                var ServiceException = new InvalidArgumentsException(Arguments, Method.GetParameters());
+                                var ServiceException = new InvalidArgumentsException(Arguments, Method.GetParameters(), ArgException.Message);
                                 await JsonSerializer.SerializeAsync(context.Response.Body, ServiceException);
                                 Console.WriteLine($"Return Code {context.Response.StatusCode}, Error:\n {ServiceException}.");
+                            }
+                            else
+                            {
+                                context.Response.StatusCode = (int)System.Net.HttpStatusCode.NotImplemented; // return 501
+                                await JsonSerializer.SerializeAsync(context.Response.Body, E);
                             }
                         }
                     }

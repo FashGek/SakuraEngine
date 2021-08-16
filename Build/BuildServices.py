@@ -14,6 +14,14 @@ def build_as_csproj(root, file):
         ])
     return
 
+def build_as_sln(root, file):
+    if(file.endswith(".sln")):
+        print('dotnet', 'build', os.path.join(root, file), '-o', './out', '-c', args.configure)
+        subprocess.call(['dotnet', 'build',
+            os.path.join(root, file), '-o', csoutdir, '-c', args.configure
+        ])
+    return
+
 def run_as_build_script(root, file):
     source_file = os.path.join(root, file)
     os.system("python3 " + source_file)
@@ -43,5 +51,6 @@ if __name__ == '__main__':
     path = './../Source/'
     for root,dirs,files in os.walk(path):
         for file in files:
-            build_as_csproj(root, file)
+            #build_as_csproj(root, file)
+            build_as_sln(root, file)
             build_as_python(root, file)

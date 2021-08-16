@@ -19,6 +19,10 @@ namespace Sakura.Services.CLI
         [return: ServiceResponse(ServiceDataFormat.JSON)]
         public string GetEngineRoot(IServiceContext Context) => EngineRootPath;
 
+        [ServiceAPI("Environment/EngineWorkDirectory")]
+        [return: ServiceResponse(ServiceDataFormat.JSON)]
+        public string GetEngineWorkDirectory(IServiceContext Context) => ServicesPath;
+
         [ServiceAPI("Environment/SetCustom")]
         [return: ServiceResponse(ServiceDataFormat.JSON)]
         public void SetCustomEnvironmentVar(IServiceContext Context, string Name, string Value, bool Volatile = false)
@@ -43,9 +47,10 @@ namespace Sakura.Services.CLI
                 Context.SaveStateAsync(StateStoreName, Name, Value).Wait();
             }
         }
+
         [ServiceAPI("Environment/GetCustom")]
         [return: ServiceResponse(ServiceDataFormat.JSON)]
-        public string GetCustomEnvironmentVar(IServiceContext Context, string Name, bool Volatile = false)
+        public string GetCustomEnvironmentVar(IServiceContext Context, string Name)
         {
             var res = VolatileEnvVars.GetValueOrDefault(Name);
             if (res is default(string))
@@ -54,6 +59,7 @@ namespace Sakura.Services.CLI
             }
             return res;
         }
+
         protected static Dictionary<string, string> VolatileEnvVars = new Dictionary<string, string>();
 
 

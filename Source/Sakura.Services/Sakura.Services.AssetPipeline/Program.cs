@@ -8,6 +8,7 @@ namespace Sakura.Services.Asset
 
     public class Program
     {
+        #region AssetTypes
         [ServiceAPI("ListTypes")]
         [return: ServiceResponse(ServiceDataFormat.JSON)]
         public AssetType[] AssetTypesList(IServiceContext Context) 
@@ -32,12 +33,30 @@ namespace Sakura.Services.Asset
         [return: ServiceResponse(ServiceDataFormat.JSON)]
         public bool AssetTypeDettachExt(IServiceContext Context, string Name, string Ext) 
             => AssetType.DettachExtension(Name, Ext);
+        #endregion AssetTypes
 
+        #region Workspace
         [ServiceAPI("BindWorkspace")]
         [return: ServiceResponse(ServiceDataFormat.JSON)]
         public bool BindWorkspace(IServiceContext Context, string Workspace, string LocalPath)
-            => false;
+        {
+            if (System.IO.Directory.Exists(LocalPath))
+            {
+                Context.Invoke("SakuraCLI", "Environment/SetCustom", new { Name = Workspace, Value = LocalPath, Volatile = true });
+                return true;
+            }
+            throw new System.ArgumentException($"Argument Exception: LocalPath {LocalPath} does not exist!", LocalPath);
+        }
+        [ServiceAPI("FindWorkspace")]
+        [return: ServiceResponse(ServiceDataFormat.JSON)]
+        public string FindWorkspace(IServiceContext Context, string Workspace)
+        {
+            string LocalPath = Context.Invoke<object, string>("SakuraCLI", "Environment/GetCustom", new { Name = Workspace });
+            return LocalPath;
+        }
+        #endregion Workspace
 
+        #region FSWatcher
         [ServiceAPI("StartWatcher")]
         [return: ServiceResponse(ServiceDataFormat.JSON)]
         public bool StartWatcher(IServiceContext Context, string Workspace, string LocalPath, string DatabaseLocation) 
@@ -46,7 +65,10 @@ namespace Sakura.Services.Asset
                 LocalPath = LocalPath,
                 DatabaseLocation = DatabaseLocation
             }, new WorkspaceWatcher(Workspace, LocalPath, DatabaseLocation));
-        
+        Dictionary<LocalWorkspaceInstance, WorkspaceWatcher> WSWatchers { get; } = new Dictionary<LocalWorkspaceInstance, WorkspaceWatcher>();
+        #endregion FSWatcher
+
+        #region BuildPipeline
         [ServiceAPI("BuildAsset")]
         [return: ServiceResponse(ServiceDataFormat.JSON)]
         public void BuildAsset(IServiceContext Context, string Workspace, string PathInWorkspace)
@@ -58,20 +80,8 @@ namespace Sakura.Services.Asset
         [return: ServiceResponse(ServiceDataFormat.JSON)]
         public void BuildAssetDummy(IServiceContext Context, string Workspace)
             => System.Console.WriteLine("Build Impl!" + Workspace);
+        #endregion BuildPipeline
 
         public static void Main(string[] args) => ServiceProgram.Run<Program>(args);
-
-        Dictionary<LocalWorkspaceInstance, WorkspaceWatcher> WSWatchers { get; } = new Dictionary<LocalWorkspaceInstance, WorkspaceWatcher>();
-
-
-        // !
-        public class Ports
-        {
-            string DAPR_HTTP_PORT { get; }
-            string DAPR_GRPC_PORT { get; }
-        }
-        [ServiceAPI("ErrorCall")]
-        [return: ServiceResponse(ServiceDataFormat.JSON)]
-        public Ports BindWorkspace2(IServiceContext Context) => Context.Invoke<object, Ports>("nodeapp", "ports", null);
     }
 }

@@ -15,7 +15,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sakura.AssetPipeline", "Sak
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sakura.Services.AssetPipeline", "Sakura.Services.AssetPipeline\Sakura.Services.AssetPipeline.csproj", "{7D96D2AD-046D-485E-9FD3-00291897D582}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sakura.AssetPipeline.Tests", "Sakura.AssetPipeline.Tests\Sakura.AssetPipeline.Tests.csproj", "{B4075361-B3E0-441B-8DF3-B66630E6D4CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sakura.AssetPipeline.Tests", "Sakura.AssetPipeline.Tests\Sakura.AssetPipeline.Tests.csproj", "{B4075361-B3E0-441B-8DF3-B66630E6D4CA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{1A4A8498-E269-4E2B-952C-6E57304EE8E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{115E23F0-B54C-4B6D-9A21-BB87AB1AD2A2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B0E1734B-A66B-4385-B00F-B51DB85C8BBA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +60,15 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9A996C6B-8B55-4DDE-A1DD-C7957E1109AD} = {1A4A8498-E269-4E2B-952C-6E57304EE8E8}
+		{E1F51ABD-3B74-420D-A402-A8E742E35361} = {115E23F0-B54C-4B6D-9A21-BB87AB1AD2A2}
+		{14E7CDD2-B2A4-4F38-A792-E494A8030FA5} = {115E23F0-B54C-4B6D-9A21-BB87AB1AD2A2}
+		{31BD66E3-D2BD-4FEF-B8FA-5DB12DB744FE} = {115E23F0-B54C-4B6D-9A21-BB87AB1AD2A2}
+		{D62D8AC4-3839-449D-A42B-04D1CDC9E1A6} = {1A4A8498-E269-4E2B-952C-6E57304EE8E8}
+		{7D96D2AD-046D-485E-9FD3-00291897D582} = {115E23F0-B54C-4B6D-9A21-BB87AB1AD2A2}
+		{B4075361-B3E0-441B-8DF3-B66630E6D4CA} = {B0E1734B-A66B-4385-B00F-B51DB85C8BBA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {90C892E8-A506-46EE-8E22-6B7920511A66}

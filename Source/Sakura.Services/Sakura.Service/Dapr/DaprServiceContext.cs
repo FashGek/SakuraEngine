@@ -14,12 +14,12 @@ namespace Sakura.Service
         public DaprServiceContext()
         {
             daprClient = new DaprClientBuilder()
-            .UseJsonSerializationOptions(
-            new System.Text.Json.JsonSerializerOptions
-            {
-                DictionaryKeyPolicy = JsonServiceNamingPolicy.Policy,
-                PropertyNameCaseInsensitive = false
-            }).Build();
+                .UseJsonSerializationOptions(
+                new System.Text.Json.JsonSerializerOptions
+                {
+                    DictionaryKeyPolicy = JsonServiceNamingPolicy.Policy,
+                    PropertyNameCaseInsensitive = false
+                }).Build();
         }
         public async Task PublishEventAsync(string pubsubName, string eventName,
             CancellationToken cancellationToken = default(CancellationToken))

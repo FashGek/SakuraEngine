@@ -12,7 +12,8 @@ namespace Sakura.Service
 
     public class InvalidArgumentsException : Exception
     {
-        public InvalidArgumentsException(object[] Arguments, System.Reflection.ParameterInfo[] ParameterInfos)
+        public InvalidArgumentsException(object[] Arguments, System.Reflection.ParameterInfo[] ParameterInfos, string What)
+            :base(What)
         {
             this.Arguments = Arguments;
             this.ParameterInfos = ParameterInfos;
@@ -34,7 +35,7 @@ namespace Sakura.Service
 
         public override string ToString()
         {
-            return $"Parse Error!\n" +
+            return $"RPC Argument Error!\n" +
                    $"Failure Infos: {System.Text.Json.JsonSerializer.Serialize(FailureInfos)}\n";
         }
 
