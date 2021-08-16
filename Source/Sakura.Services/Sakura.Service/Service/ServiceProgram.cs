@@ -9,12 +9,7 @@
 
     public class ServiceProgram
     {
-        public static ServiceProgram Run<T>(string[] args) where T : new ()
-        {
-            ServiceProgram cs = new ServiceProgram();
-            cs.CreateHostBuilder<T>(args).Build().Run();
-            return cs;
-        }
+        public static void Run<T>(string[] args) where T : new () => new ServiceProgram().CreateHostBuilder<T>(args).Build().Run();
 
         protected ServiceProgram() { }
 

@@ -14,10 +14,7 @@
 
     public static class Program
     {
-        public static void Main(string[] args)
-        {
-            VersionControlService = ServiceProgram.Run<VersionControlService>(args);
-        }
+        public static void Main(string[] args) => ServiceProgram.Run<VersionControlService>(args);
 
         static ServiceProgram VersionControlService;
     }
